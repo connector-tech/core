@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    volumes:
+      - .:/app
+    environment:
+      RELOAD: 'true'
+    tty: true
+    command: python -m code.app
+
+networks:
+  default:
+    name: connector_network

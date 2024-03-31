@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  service:
+    image: ${IMAGE}
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      resources:
+        reservations:
+          cpus: '0.1'
+          memory: 128MB
+        limits:
+          cpus: '0.1'
+          memory: 128MB
+      update_config:
+        order: start-first
+    command: python -m code.app

@@ -1,0 +1,6 @@
+[report]
+omit =
+    */__init__.py
+    */config.py
+
+fail_under = 30

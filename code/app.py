@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from tortoise import Tortoise
 
+from code.api import setup_routers
 from code.config import settings, TORTOISE_CONFIG
 from code.handlers import health
 
@@ -27,6 +28,7 @@ app.add_middleware(
     allow_headers=['*'],
 )
 app.add_api_route('/health/', health)
+setup_routers(app)
 
 if __name__ == '__main__':
     uvicorn.run('code.app:app', host='0.0.0.0', reload=settings.debug)

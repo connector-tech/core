@@ -11,14 +11,19 @@ class Common(models.Model):
 
 
 class User(Common):
-    username = fields.CharField(max_length=255)
-    full_name = fields.CharField(max_length=255)
-    email = fields.CharField(max_length=255)
-    age = fields.IntField()
+    username = fields.CharField(max_length=255, null=True, unique=True)
+    first_name = fields.CharField(max_length=255)
+    last_name = fields.CharField(max_length=255)
+    email = fields.CharField(max_length=255, unique=True)
+    age = fields.IntField(null=True)
     password = fields.CharField(max_length=255)
 
     def __str__(self):
         return self.username
+
+    @property
+    def full_name(self):
+        return f'{self.first_name} {self.last_name}'
 
     class Meta:
         table = 'users'

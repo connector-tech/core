@@ -1,4 +1,4 @@
-from code.models import User, UserInterests
+from code.models import Interest, User
 from code.utils import hash_password
 
 
@@ -20,9 +20,8 @@ async def register(data: dict) -> User:
     )
 
     if interest_ids:
-        await UserInterests.bulk_create(
-            [UserInterests(user_id=user.id, interest_id=interest_id) for interest_id in interest_ids],
-        )
+        interests = await Interest.filter(id__in=interest_ids)
+        await user.interests.add(*interests)
 
     return user
 

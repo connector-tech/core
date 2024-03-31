@@ -19,12 +19,12 @@ class User(Common):
     email = fields.CharField(max_length=255, unique=True)
     age = fields.IntField(null=True)
     bio = fields.TextField(null=True)
+    password = fields.CharField(max_length=255)
     interests = fields.ManyToManyField(
         'models.Interest',
         related_name='users',
         through='user_interests',
     )
-    password = fields.CharField(max_length=255)
 
     def __str__(self):
         return self.username
@@ -38,15 +38,6 @@ class User(Common):
 
     class Meta:
         table = 'users'
-
-
-class UserInterests(models.Model):
-    user = fields.ForeignKeyField('models.User', related_name='user_interests')
-    interest = fields.ForeignKeyField('models.Interest', related_name='user_interests')
-
-    class Meta:
-        table = 'user_interests'
-        unique_together = ('user', 'interest')
 
 
 class Interest(Common):

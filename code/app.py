@@ -27,6 +27,7 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+
 app.add_api_route('/health/', health)
 setup_routers(app)
 

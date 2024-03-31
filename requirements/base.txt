@@ -6,3 +6,5 @@ pydantic[email]==2.3.*
 pydantic-settings
 httpx==0.24.1
 passlib[bcrypt]
+python-jose[cryptography]
+loguru

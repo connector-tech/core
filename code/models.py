@@ -1,5 +1,7 @@
 from tortoise import fields, models
 
+from code.utils import pwd_context
+
 
 class Common(models.Model):
     id = fields.UUIDField(pk=True)  # noqa
@@ -24,6 +26,9 @@ class User(Common):
     @property
     def full_name(self):
         return f'{self.first_name} {self.last_name}'
+
+    def check_password(self, password: str) -> bool:
+        return pwd_context.verify(password, self.password)
 
     class Meta:
         table = 'users'

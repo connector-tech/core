@@ -6,6 +6,10 @@ class SignInBaseRequest(BaseModel):
     password: str = Field(...)
 
 
+class SignInBaseResponse(BaseModel):
+    access_token: str = Field(...)
+
+
 class SignUpBaseRequest(BaseModel):
     first_name: str = Field(...)
     last_name: str = Field(...)

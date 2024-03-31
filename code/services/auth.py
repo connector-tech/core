@@ -16,3 +16,14 @@ async def register(data: dict) -> User:
     )
 
     return user
+
+
+async def login(data: dict) -> User:
+    user = await User.get(email=data['email'])
+    if not user:
+        raise ValueError('User not found')
+
+    if not user.check_password(data['password']):
+        raise ValueError('Invalid password')
+
+    return user

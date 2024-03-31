@@ -14,12 +14,8 @@ class SignUpBaseRequest(BaseModel):
     first_name: str = Field(...)
     last_name: str = Field(...)
     email: str = Field(...)
+    age: int = Field(...)
+    bio: str = Field(...)
+    interests: list[str] = Field(default=[])
     password: str = Field(...)
     confirm_password: str = Field(...)
-
-
-class SignUpBaseResponse(BaseModel):
-    full_name: str = Field(...)
-    email: str = Field(...)
-    age: int = Field(...)
-    created_at: str = Field(...)

@@ -14,7 +14,7 @@ services:
       - .:/app
     environment:
       <<: *common-vars
-    command: sh -c "python -m code.app"
+    command: sh -c "aerich upgrade && python -m code.app"
     ports:
       - '8000:8000'
     depends_on:

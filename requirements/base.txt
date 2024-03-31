@@ -1,3 +1,10 @@
-fastapi
-uvicorn
-httpx
+fastapi==0.109.*
+tortoise-orm[asyncpg]==0.20.*
+aerich==0.7.2
+uvicorn==0.25.0
+pydantic[email]==2.3.*
+pydantic-settings
+httpx==0.24.1
+passlib[bcrypt]
+python-jose[cryptography]
+loguru

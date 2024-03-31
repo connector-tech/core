@@ -32,7 +32,7 @@ async def get_user_handler(user_id: str = Depends(get_current_user_id)):
     )
 
 
-@router.put('/{user_id}', response_model=UserDetailBaseResponse)
+@router.put('/', response_model=UserDetailBaseResponse)
 async def update_user_handler(payload: UserUpdateBaseRequest, user_id: str = Depends(get_current_user_id)):
     try:
         user = await UserService.update_user(user_id, payload.model_dump())

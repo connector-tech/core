@@ -3,6 +3,7 @@ version: '3.8'
 x-common-variables:
   &common-vars
   DATABASE_URL: postgres://postgres:postgres@db/postgres
+  SECRET_KEY: ba88a6f5635f7e563f87158fb8a891dc84614b10015230f97b0bf7d9125c61e8
 
 services:
   app:
@@ -13,7 +14,7 @@ services:
       - .:/app
     environment:
       <<: *common-vars
-    command: sh -c "python -m code.app"
+    command: sh -c "aerich upgrade && python -m code.app"
     ports:
       - '8000:8000'
     depends_on:

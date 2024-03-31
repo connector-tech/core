@@ -5,3 +5,7 @@ uvicorn==0.25.0
 pydantic[email]==2.3.*
 pydantic-settings
 httpx==0.24.1
+passlib[bcrypt]
+bcrypt==4.0.1
+python-jose[cryptography]
+loguru

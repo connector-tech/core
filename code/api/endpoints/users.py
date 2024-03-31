@@ -1,6 +1,7 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 from starlette.responses import JSONResponse
 
+from code.api.deps import get_current_user_id
 from code.dto.users import UserDetailBaseResponse, UserUpdateBaseRequest
 from code.services.users import UserService
 
@@ -9,7 +10,7 @@ router = APIRouter(prefix='/users', tags=['users'])
 
 
 @router.get('/', response_model=UserDetailBaseResponse)
-async def get_user_handler(user_id: str):
+async def get_user_handler(user_id: str = Depends(get_current_user_id)):
     try:
         user = await UserService.get_user(user_id)
     except Exception as e:
@@ -32,7 +33,7 @@ async def get_user_handler(user_id: str):
 
 
 @router.put('/{user_id}', response_model=UserDetailBaseResponse)
-async def update_user_handler(user_id: str, payload: UserUpdateBaseRequest):
+async def update_user_handler(payload: UserUpdateBaseRequest, user_id: str = Depends(get_current_user_id)):
     try:
         user = await UserService.update_user(user_id, payload.model_dump())
     except Exception as e:

@@ -1,3 +1,5 @@
+import datetime
+
 from tortoise import fields, models
 
 from code.utils import pwd_context
@@ -17,7 +19,7 @@ class User(Common):
     first_name = fields.CharField(max_length=255)
     last_name = fields.CharField(max_length=255)
     email = fields.CharField(max_length=255, unique=True)
-    age = fields.IntField(null=True)
+    birth_date = fields.DateField(null=True)
     bio = fields.TextField(null=True)
     password = fields.CharField(max_length=255)
     interests = fields.ManyToManyField(
@@ -30,8 +32,12 @@ class User(Common):
         return self.username
 
     @property
-    def full_name(self):
+    def full_name(self) -> str:
         return f'{self.first_name} {self.last_name}'
+
+    @property
+    def age(self) -> int:
+        return (datetime.date.today() - self.birth_date).days // 365
 
     def check_password(self, password: str) -> bool:
         return pwd_context.verify(password, self.password)

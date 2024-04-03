@@ -17,3 +17,13 @@ class UserUpdateBaseRequest(BaseModel):
     age: int | None = None
     bio: str | None = None
     interests: list[str] = []
+
+
+class UserListBaseResponse(BaseModel):
+    id: str  # noqa
+    username: str
+    full_name: str
+    email: str
+    age: int
+    bio: str
+    interests: list[str] = []

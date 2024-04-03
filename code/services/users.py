@@ -3,6 +3,11 @@ from code.models import Interest, User
 
 class UserService:
     @classmethod
+    async def get_users(cls, page: int, size: int):
+        users = await User.all().offset((page - 1) * size).limit(size).prefetch_related('interests')
+        return users
+
+    @classmethod
     async def get_user(cls, user_id):
         user = await User.filter(id=user_id).prefetch_related('interests').first()
         return user

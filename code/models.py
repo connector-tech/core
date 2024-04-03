@@ -36,7 +36,9 @@ class User(Common):
         return f'{self.first_name} {self.last_name}'
 
     @property
-    def age(self) -> int:
+    def age(self) -> int | None:
+        if not self.birth_date:
+            return None
         return (datetime.date.today() - self.birth_date).days // 365
 
     def check_password(self, password: str) -> bool:
@@ -54,3 +56,12 @@ class Interest(Common):
 
     class Meta:
         table = 'interests'
+
+
+class UserLike(Common):
+    user = fields.ForeignKeyField('models.User', related_name='likes')
+    liked_user = fields.ForeignKeyField('models.User', related_name='liked_by')
+
+    class Meta:
+        table = 'user_likes'
+        indexes = [('user_id', 'liked_user_id')]

@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
 from code.api import setup_routers
@@ -19,6 +20,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.mount('/media', StaticFiles(directory='media'), name='media')
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],

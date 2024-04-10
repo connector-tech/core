@@ -8,6 +8,7 @@ class UserDetailBaseResponse(BaseModel):
     email: str
     age: int
     bio: str
+    photos: list[str] = []
     interests: list[str] = []
 
 
@@ -27,4 +28,9 @@ class UserListBaseResponse(BaseModel):
     age: int
     bio: str
     is_liked: bool | None = None
+    photos: list[str] = []
     interests: list[str] = []
+
+
+class UploadUserPhotosBaseResponse(BaseModel):
+    photos: list[str]

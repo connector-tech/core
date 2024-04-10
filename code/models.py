@@ -22,6 +22,7 @@ class User(Common):
     birth_date = fields.DateField(null=True)
     bio = fields.TextField(null=True)
     password = fields.CharField(max_length=255)
+    photos = fields.JSONField(default=[])
     interests = fields.ManyToManyField(
         'models.Interest',
         related_name='users',

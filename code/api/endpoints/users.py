@@ -1,9 +1,15 @@
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, status, UploadFile
 from starlette.responses import JSONResponse
 
 from code.api.deps import get_current_user_id
 from code.dto.common import PaginatedResponse
-from code.dto.users import UserDetailBaseResponse, UserListBaseResponse, UserUpdateBaseRequest
+from code.dto.users import (
+    UploadUserPhotosBaseResponse,
+    UserDetailBaseResponse,
+    UserListBaseResponse,
+    UserUpdateBaseRequest,
+)
+from code.services.media import MediaService
 from code.services.users import UserService
 
 
@@ -35,6 +41,7 @@ async def get_users_handler(
                     'age': user.age,
                     'bio': user.bio,
                     'is_liked': user.is_liked,
+                    'photos': user.photos,
                     'interests': [interest.name for interest in user.interests],
                 }
                 for user in users
@@ -61,6 +68,7 @@ async def update_user_handler(payload: UserUpdateBaseRequest, user_id: str = Dep
             'email': user.email,
             'age': user.age,
             'bio': user.bio,
+            'photos': user.photos,
             'interests': [interest.name for interest in user.interests],
         },
     )
@@ -84,6 +92,19 @@ async def get_my_user_handler(user_id: str = Depends(get_current_user_id)):
             'email': user.email,
             'age': user.age,
             'bio': user.bio,
+            'photos': user.photos,
             'interests': [interest.name for interest in user.interests],
         },
     )
+
+
+@router.post('/photos/upload/', response_model=UploadUserPhotosBaseResponse)
+async def upload_user_photos_handler(photos: list[UploadFile], user_id: str = Depends(get_current_user_id)):
+    try:
+        uploaded_photo_ids = await MediaService.upload_user_photos(user_id, photos)
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={'message': str(e)},
+        )
+    return JSONResponse(status_code=status.HTTP_200_OK, content={'photos': uploaded_photo_ids})

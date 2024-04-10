@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
 
-class LikeUserBaseRequest(BaseModel):
+class UserViewedBaseRequest(BaseModel):
     user_id: str
+    is_liked: bool

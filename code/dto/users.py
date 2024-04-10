@@ -26,4 +26,5 @@ class UserListBaseResponse(BaseModel):
     email: str
     age: int
     bio: str
+    is_liked: bool | None = None
     interests: list[str] = []

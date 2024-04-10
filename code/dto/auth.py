@@ -1,3 +1,5 @@
+import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -14,7 +16,7 @@ class SignUpBaseRequest(BaseModel):
     first_name: str = Field(...)
     last_name: str = Field(...)
     email: str = Field(...)
-    age: int = Field(...)
+    birth_date: datetime.date = Field(...)
     bio: str = Field(...)
     interests: list[str] = Field(default=[])
     password: str = Field(...)

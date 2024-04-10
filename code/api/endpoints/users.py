@@ -16,7 +16,11 @@ async def get_users_handler(
     page: int = Query(ge=1, default=1),
     size: int = Query(ge=10, le=100, default=10),
 ):
-    users = await UserService.get_users(page, size)
+    users = await UserService.get_users(
+        viewer_id=user_id,
+        page=page,
+        size=size,
+    )
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -30,6 +34,7 @@ async def get_users_handler(
                     'email': user.email,
                     'age': user.age,
                     'bio': user.bio,
+                    'is_liked': user.is_liked,
                     'interests': [interest.name for interest in user.interests],
                 }
                 for user in users

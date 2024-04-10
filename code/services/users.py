@@ -1,10 +1,29 @@
-from code.models import Interest, User
+from code.models import Interest, User, UserSocial
 
 
 class UserService:
     @classmethod
-    async def get_users(cls, page: int, size: int):
-        users = await User.all().offset((page - 1) * size).limit(size).prefetch_related('interests')
+    async def get_users(cls, viewer_id: str, page: int, size: int):
+        viewed_user_ids = await UserSocial.filter(
+            viewer_id=viewer_id,
+        ).values_list('user_id', flat=True)
+
+        users = await (
+            User.exclude(id__in=viewed_user_ids)
+            .exclude(id=viewer_id)
+            .order_by('-created_at')
+            .offset((page - 1) * size)
+            .limit(size)
+            .prefetch_related('interests')  # noqa
+        )
+
+        for user in users:
+            user.is_liked = await UserSocial.filter(
+                viewer_id=user.id,
+                user_id=viewer_id,
+                is_liked=True,
+            ).exists()
+
         return users
 
     @classmethod

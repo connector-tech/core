@@ -58,10 +58,11 @@ class Interest(Common):
         table = 'interests'
 
 
-class UserLike(Common):
-    user = fields.ForeignKeyField('models.User', related_name='likes')
-    liked_user = fields.ForeignKeyField('models.User', related_name='liked_by')
+class UserSocial(Common):
+    viewer = fields.ForeignKeyField('models.User', related_name='viewed')
+    user = fields.ForeignKeyField('models.User', related_name='viewers')
+    is_liked = fields.BooleanField(default=False)
 
     class Meta:
-        table = 'user_likes'
-        indexes = [('user_id', 'liked_user_id')]
+        table = 'user_social'
+        indexes = [('viewer_id', 'user_id')]

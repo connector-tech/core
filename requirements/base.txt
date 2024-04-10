@@ -1,3 +1,4 @@
+python-multipart
 fastapi==0.109.*
 tortoise-orm[asyncpg]==0.20.*
 aerich==0.7.2

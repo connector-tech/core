@@ -14,6 +14,7 @@ async def register(data: dict) -> User:
         first_name=data['first_name'],
         last_name=data['last_name'],
         birth_date=data['birth_date'],
+        gender=data['gender'],
         bio=data['bio'],
         email=data['email'],
         password=hashed_password,

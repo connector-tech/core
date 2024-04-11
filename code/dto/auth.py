@@ -2,6 +2,8 @@ import datetime
 
 from pydantic import BaseModel, Field
 
+from code.models import User
+
 
 class SignInBaseRequest(BaseModel):
     email: str = Field(...)
@@ -18,6 +20,7 @@ class SignUpBaseRequest(BaseModel):
     email: str = Field(...)
     birth_date: datetime.date = Field(...)
     bio: str = Field(...)
+    gender: User.GenderEnum = Field(...)
     interests: list[str] = Field(default=[])
     password: str = Field(...)
     confirm_password: str = Field(...)

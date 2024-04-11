@@ -1,4 +1,5 @@
 import datetime
+from enum import StrEnum
 
 from tortoise import fields, models
 
@@ -15,12 +16,17 @@ class Common(models.Model):
 
 
 class User(Common):
+    class GenderEnum(StrEnum):
+        MALE = 'MALE'
+        FEMALE = 'FEMALE'
+
     username = fields.CharField(max_length=255, null=True, unique=True)
     first_name = fields.CharField(max_length=255)
     last_name = fields.CharField(max_length=255)
     email = fields.CharField(max_length=255, unique=True)
     birth_date = fields.DateField(null=True)
     bio = fields.TextField(null=True)
+    gender = fields.CharEnumField(GenderEnum, default=GenderEnum.MALE, null=True)
     password = fields.CharField(max_length=255)
     photos = fields.JSONField(default=[])
     interests = fields.ManyToManyField(

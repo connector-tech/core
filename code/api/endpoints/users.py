@@ -42,6 +42,7 @@ async def get_users_handler(
                     'bio': user.bio,
                     'is_liked': user.is_liked,
                     'photos': user.photos,
+                    'gender': user.gender,
                     'interests': [interest.name for interest in user.interests],
                 }
                 for user in users
@@ -93,6 +94,7 @@ async def get_my_user_handler(user_id: str = Depends(get_current_user_id)):
             'age': user.age,
             'bio': user.bio,
             'photos': user.photos,
+            'gender': user.gender,
             'interests': [interest.name for interest in user.interests],
         },
     )

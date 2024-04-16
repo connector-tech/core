@@ -1,3 +1,5 @@
+import datetime
+
 from pydantic import BaseModel
 
 
@@ -15,7 +17,7 @@ class UserDetailBaseResponse(BaseModel):
 class UserUpdateBaseRequest(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
-    age: int | None = None
+    birth_date: datetime.date | None = None
     bio: str | None = None
     interests: list[str] = []
 

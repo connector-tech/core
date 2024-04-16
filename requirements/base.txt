@@ -1,3 +1,4 @@
+python-multipart
 fastapi==0.109.*
 tortoise-orm[asyncpg]==0.20.*
 aerich==0.7.2
@@ -8,4 +9,5 @@ httpx==0.24.1
 passlib[bcrypt]
 bcrypt==4.0.1
 python-jose[cryptography]
+websockets
 loguru

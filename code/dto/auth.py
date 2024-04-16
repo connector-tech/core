@@ -1,4 +1,8 @@
+import datetime
+
 from pydantic import BaseModel, Field
+
+from code.models import User
 
 
 class SignInBaseRequest(BaseModel):
@@ -14,8 +18,9 @@ class SignUpBaseRequest(BaseModel):
     first_name: str = Field(...)
     last_name: str = Field(...)
     email: str = Field(...)
-    age: int = Field(...)
+    birth_date: datetime.date = Field(...)
     bio: str = Field(...)
+    gender: User.GenderEnum = Field(...)
     interests: list[str] = Field(default=[])
     password: str = Field(...)
     confirm_password: str = Field(...)

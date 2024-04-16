@@ -30,4 +30,4 @@ app.add_middleware(
 setup_routers(app)
 
 if __name__ == '__main__':
-    uvicorn.run('code.app:app', host='0.0.0.0', reload=settings.debug)
+    uvicorn.run('code.app:app', host='0.0.0.0', port=80, reload=settings.debug)

@@ -72,4 +72,26 @@ class UserSocial(Common):
 
     class Meta:
         table = 'user_social'
+        unique_together = [('viewer_id', 'user_id')]
         indexes = [('viewer_id', 'user_id')]
+
+
+class Message(Common):
+    user = fields.ForeignKeyField('models.User', related_name='messages')
+    chat = fields.ForeignKeyField('models.Chat', related_name='messages')
+    text = fields.TextField()
+    is_read = fields.BooleanField(default=False)
+
+    class Meta:
+        table = 'messages'
+        indexes = ['user_id', 'created_at']
+
+
+class Chat(Common):
+    user_1 = fields.ForeignKeyField('models.User', related_name='chats_1')
+    user_2 = fields.ForeignKeyField('models.User', related_name='chats_2')
+
+    class Meta:
+        table = 'chats'
+        unique_together = [('user_1_id', 'user_2_id')]
+        indexes = ['user_1_id', 'user_2_id', 'created_at']

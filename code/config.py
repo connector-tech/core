@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     debug: bool = True
     database_url: PostgresDsn
     secret_key: str = 'secret'
-    jwt_expire: int = 3600
+    jwt_expire: int = 24 * 60 * 60
     jwt_algorithm: str = 'HS256'
 
 

@@ -9,7 +9,7 @@ PREFERRED_GENDER_MAPPER = {
 
 class UserService:
     @classmethod
-    async def get_users(cls, viewer_id: str, page: int, size: int):
+    async def get_users(cls, viewer_id: str, page: int, size: int) -> list[User]:
         viewer = await User.filter(id=viewer_id).only('gender').first()
 
         viewed_user_ids = await UserSocial.filter(
@@ -36,12 +36,12 @@ class UserService:
         return users
 
     @classmethod
-    async def get_user(cls, user_id):
+    async def get_user(cls, user_id: str) -> User:
         user = await User.filter(id=user_id).prefetch_related('interests').first()
         return user
 
     @classmethod
-    async def update_user(cls, user_id, payload):
+    async def update_user(cls, user_id: str, payload: dict) -> User:
         user = await User.filter(id=user_id).prefetch_related('interests').first()
 
         interests = payload.pop('interests', [])

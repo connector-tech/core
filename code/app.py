@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -7,16 +8,27 @@ from fastapi.staticfiles import StaticFiles
 from tortoise import Tortoise
 
 from code.api import setup_routers
+from code.clients.boto3 import S3
 from code.config import settings, TORTOISE_CONFIG
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
-        await Tortoise.init(config=TORTOISE_CONFIG)
+        await asyncio.gather(
+            Tortoise.init(config=TORTOISE_CONFIG),
+            S3.connect(
+                access_key_id=settings.aws_access_key_id,
+                secret_access_key=settings.aws_secret_access_key,
+                bucket_name=settings.aws_bucket_name,
+            ),
+        )
         yield
     finally:
-        await Tortoise.close_connections()
+        await asyncio.gather(
+            S3.disconnect(),
+            Tortoise.close_connections(),
+        )
 
 
 app = FastAPI(lifespan=lifespan)

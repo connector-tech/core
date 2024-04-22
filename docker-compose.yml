@@ -4,6 +4,9 @@ x-common-variables:
   &common-vars
   DATABASE_URL: postgres://postgres:postgres@db/postgres
   SECRET_KEY: ba88a6f5635f7e563f87158fb8a891dc84614b10015230f97b0bf7d9125c61e8
+  AWS_ACCESS_KEY_ID: *
+  AWS_SECRET_ACCESS_KEY: *
+  AWS_BUCKET_NAME: •
 
 services:
   app:
@@ -16,7 +19,7 @@ services:
       <<: *common-vars
     command: sh -c "aerich upgrade && python -m code.app"
     ports:
-      - '8000:8000'
+      - '80:80'
     depends_on:
       db:
         condition: service_healthy

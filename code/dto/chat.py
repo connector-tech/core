@@ -15,6 +15,12 @@ class ChatListBaseResponse(BaseModel):
     is_read: bool
 
 
+class ChatCreateBaseResponse(BaseModel):
+    id: str  # noqa
+
+class ChatCreateBaseRequest(BaseModel):
+    receiver_id: str
+
 class MessageListBaseResponse(BaseModel):
     id: str  # noqa
     text: str

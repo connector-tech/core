@@ -6,11 +6,10 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 
 from code.api.deps import get_current_user_id
-from code.dto.chat import ChatListBaseResponse, MessageListBaseResponse
+from code.dto.chat import ChatListBaseResponse, MessageListBaseResponse, ChatCreateBaseResponse, ChatCreateBaseRequest
 from code.dto.common import PaginatedResponse
 from code.models import Chat, Message
 from code.services.chat import ChatService
-
 
 router = APIRouter(prefix='/chats', tags=['chats'])
 
@@ -45,6 +44,25 @@ async def get_chats_handler(
     )
 
 
+@router.post('/', response_model=ChatCreateBaseResponse)
+async def create_chat_handler(
+    data: ChatCreateBaseRequest,
+    user_id: str = Depends(get_current_user_id),
+):
+    chat_id = str(uuid.uuid4())
+    await Chat.create(
+        id=chat_id,
+        user_1_id=user_id,
+        user_2_id=data.receiver_id,
+    )
+    return JSONResponse(
+        status_code=status.HTTP_201_CREATED,
+        content={
+            'id': chat_id,
+        },
+    )
+
+
 @router.get('/{chat_id}/messages/', response_model=PaginatedResponse[MessageListBaseResponse])
 async def get_messages_handler(
     chat_id: str,
@@ -70,47 +88,39 @@ async def get_messages_handler(
     )
 
 
-@router.websocket('/ws/{user_id}')
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await websocket.accept()
 
     connected_users[user_id] = websocket
+    logger.info(f'websocket connected: {user_id}')
 
     try:
         while True:
-            data = await websocket.receive_text()
+            data = await websocket.receive_json()
             logger.info(f'websocket data: {data}')
 
             receiver_id = data.get('receiver_id')
             receiver = connected_users.get(receiver_id)
 
-            coros = []
-
-            if not data.get('chat_id'):
-                chat_id = str(uuid.uuid4())
-                data['chat_id'] = chat_id
-                coros.append(
-                    asyncio.create_task(
-                        Chat.create(
-                            id=chat_id,
-                            user1_id=user_id,
-                            user2_id=receiver_id,
-                        ),
-                    ),
-                )
-            coros.append(
+            coros = [
                 asyncio.create_task(
                     Message.create(
                         user_id=user_id,
                         chat_id=data['chat_id'],
                         text=data['text'],
                     ),
-                ),
-            )
+                )
+            ]
 
             if receiver:
                 coros.append(asyncio.create_task(receiver.send_json(data)))
-            await asyncio.gather(*coros, return_exceptions=True)
+            responses = await asyncio.gather(*coros, return_exceptions=True)
+
+            logger.info(f'coro responses: {responses}')
+
+            for response in responses:
+                if isinstance(response, Exception):
+                    logger.error(f'websocket error: {response}')
     except Exception as e:
         logger.error(f'websocket error: {e}')
         await websocket.close()

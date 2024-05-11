@@ -1,0 +1,51 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t connector-core -f docker/Dockerfile .
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker tag connector-app ${{ secrets.DOCKER_USERNAME }}/connector-app:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/connector-app:latest
+
+      - name: Stop existing container on AWS Lightsail
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          docker stop connector-app || true
+          docker rm connector-app || true
+
+      - name: Deploy to AWS Lightsail
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          # Pull the Docker image from Docker Hub
+          docker pull ${{ secrets.DOCKER_USERNAME }}/connector-app:latest
+
+          # Run the Docker container on AWS Lightsail
+          docker run -d --env-file=.env --name=connector-app -p 443:443
+          -v /home/ubuntu/core/ssl-keys:/app/ssl-keys connector-core
+          sh -c "aerich upgrade && uvicorn code.app:app --host 0.0.0.0 --port 443 --ssl-keyfile /app/ssl-keys/privkey.pem --ssl-certfile /app/ssl-keys/fullchain.pem"

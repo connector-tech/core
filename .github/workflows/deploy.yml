@@ -46,6 +46,6 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/connector-core:latest
 
           # Run the Docker container on AWS Lightsail
-          docker run -d --env-file=.env --name=connector-app-1 -p 443:443
-          -v /home/ubuntu/core/ssl-keys:/app/ssl-keys connector-core
+          docker run -d --env-file=.env --name=connector-app-1 -p 443:443 \
+          -v /home/ubuntu/core/ssl-keys:/app/ssl-keys connector-core \
           sh -c "aerich upgrade && uvicorn code.app:app --host 0.0.0.0 --port 443 --ssl-keyfile /app/ssl-keys/privkey.pem --ssl-certfile /app/ssl-keys/fullchain.pem"

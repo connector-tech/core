@@ -7,7 +7,7 @@ from loguru import logger
 
 from code.api.deps import get_current_user_id
 from code.dto.chat import ChatListBaseResponse, MessageListBaseResponse, ChatCreateBaseResponse, ChatCreateBaseRequest
-from code.dto.common import PaginatedResponse
+from code.dto.common import PaginatedResponse, ErrorResponse
 from code.models import Chat, Message
 from code.services.chat import ChatService
 
@@ -16,13 +16,27 @@ router = APIRouter(prefix='/chats', tags=['chats'])
 connected_users = {}
 
 
-@router.get('/', response_model=PaginatedResponse[ChatListBaseResponse])
+@router.get(
+    '/',
+
+    responses={
+        200: {'model': PaginatedResponse[ChatListBaseResponse]},
+        400: {'model': ErrorResponse},
+        500: {'model': ErrorResponse},
+    },
+)
 async def get_chats_handler(
     user_id: str = Depends(get_current_user_id),
     page: int = Query(ge=1, default=1),
     size: int = Query(ge=10, le=100, default=10),
 ):
-    chats = await ChatService.get_chats(user_id, page=page, size=size)
+    try:
+        chats = await ChatService.get_chats(user_id, page=page, size=size)
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={'message': f'Error: {e}'},
+        )
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
@@ -44,17 +58,30 @@ async def get_chats_handler(
     )
 
 
-@router.post('/', response_model=ChatCreateBaseResponse)
+@router.post(
+    '/',
+    responses={
+        201: {'model': ChatCreateBaseResponse},
+        400: {'model': ErrorResponse},
+        500: {'model': ErrorResponse},
+    },
+)
 async def create_chat_handler(
     data: ChatCreateBaseRequest,
     user_id: str = Depends(get_current_user_id),
 ):
-    chat_id = str(uuid.uuid4())
-    await Chat.create(
-        id=chat_id,
-        user_1_id=user_id,
-        user_2_id=data.receiver_id,
-    )
+    try:
+        chat_id = str(uuid.uuid4())
+        await Chat.create(
+            id=chat_id,
+            user_1_id=user_id,
+            user_2_id=data.receiver_id,
+        )
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={'message': f'Error: {e}'},
+        )
     return JSONResponse(
         status_code=status.HTTP_201_CREATED,
         content={
@@ -63,14 +90,27 @@ async def create_chat_handler(
     )
 
 
-@router.get('/{chat_id}/messages/', response_model=PaginatedResponse[MessageListBaseResponse])
+@router.get(
+    '/{chat_id}/messages/',
+    responses={
+        200: {'model': PaginatedResponse[MessageListBaseResponse]},
+        400: {'model': ErrorResponse},
+        500: {'model': ErrorResponse},
+    },
+)
 async def get_messages_handler(
     chat_id: str,
     user_id: str = Depends(get_current_user_id),
     page: int = Query(ge=1, default=1),
     size: int = Query(ge=10, le=100, default=10),
 ):
-    messages = await ChatService.get_messages(user_id, chat_id, page=page, size=size)
+    try:
+        messages = await ChatService.get_messages(user_id, chat_id, page=page, size=size)
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={'message': f'Error: {e}'},
+        )
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={

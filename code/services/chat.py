@@ -34,7 +34,7 @@ class ChatService:
     async def get_chats(cls, user_id: str, page: int, size: int) -> list[Chat]:
         chats = (
             await Chat.filter(
-                Q(user1_id=user_id) | Q(user2_id=user_id),
+                Q(user_1_id=user_id) | Q(user_2_id=user_id),
             )
             .order_by('-created_at')
             .offset((page - 1) * size)

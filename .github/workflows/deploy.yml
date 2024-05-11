@@ -51,10 +51,10 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/connector-core:latest
 
           # Run the Docker container on AWS Lightsail
-          docker run -d --name=connector-app-1 -p 443:443 -v /home/ubuntu/core/ssl-keys:/app/ssl-keys connector-core \
+          docker run -d --name=connector-app-1 -p 443:443 -v /home/ubuntu/core/ssl-keys:/app/ssl-keys \
           -e DATABASE_URL=$DATABASE_URL \
           -e S3_ACCESS_KEY_ID=$S3_ACCESS_KEY_ID \
           -e S3_BUCKET_NAME=$S3_BUCKET_NAME \
           -e S3_SECRET_ACCESS_KEY=$S3_SECRET_ACCESS_KEY \
           -e SECRET_KEY=$SECRET_KEY \
-          sh -c "aerich upgrade && uvicorn code.app:app --host 0.0.0.0 --port 443 --ssl-keyfile /app/ssl-keys/privkey.pem --ssl-certfile /app/ssl-keys/fullchain.pem"
+          connector-core sh -c "aerich upgrade && uvicorn code.app:app --host 0.0.0.0 --port 443 --ssl-keyfile /app/ssl-keys/privkey.pem --ssl-certfile /app/ssl-keys/fullchain.pem"

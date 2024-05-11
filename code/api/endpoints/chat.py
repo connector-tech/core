@@ -116,7 +116,7 @@ async def get_messages_handler(
                 {
                     'id': str(message.id),
                     'text': message.text,
-                    'created_at': message.created_at,
+                    'created_at': str(message.created_at),
                     'is_me': message.is_me,
                 }
                 for message in messages

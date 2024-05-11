@@ -55,7 +55,7 @@ class ChatService:
             receiver = chat.user_1 if chat.user_2.id == user_id else chat.user_2
             chat.receiver = {
                 'id': str(receiver.id),
-                'username': receiver.username,
+                'full_name': receiver.full_name,
                 'avatar': receiver.photos[0] if receiver.photos else None,
             },
             chat.last_message = last_message.text if last_message else None

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 class ChatListBaseResponse(BaseModel):
     class Receiver(BaseModel):
         id: str  # noqa
-        username: str
+        full_name: str
         avatar: str
 
     id: str  # noqa

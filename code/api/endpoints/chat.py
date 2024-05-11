@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import uuid
 
 from fastapi import APIRouter, Depends, Query, status, WebSocket
@@ -44,11 +45,7 @@ async def get_chats_handler(
             'items': [
                 {
                     'id': str(chat.id),
-                    'receiver': {
-                        'id': str(chat.user_1.id if chat.user_2.id == user_id else chat.user_2.id),
-                        'username': chat.user_1.username if chat.user_2.id == user_id else chat.user_2.username,
-                        'avatar': chat.user_1.photos[0] if chat.user_2.id == user_id else chat.user_2.photos[0],
-                    },
+                    'receiver': chat.receiver,
                     'last_message': chat.last_message,
                     'is_read': chat.is_read,
                 }

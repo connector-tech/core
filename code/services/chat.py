@@ -35,7 +35,7 @@ class ChatService:
         chats = (
             await Chat.filter(
                 Q(user_1_id=user_id) | Q(user_2_id=user_id),
-            )
+            ).prefetch_related('user_1', 'user_2')
             .order_by('-created_at')
             .offset((page - 1) * size)
             .limit(size)
@@ -52,6 +52,12 @@ class ChatService:
                 .order_by('-created_at')
                 .first()
             )
+            receiver = chat.user_1 if chat.user_2.id == user_id else chat.user_2
+            chat.receiver = {
+                'id': str(receiver.id),
+                'username': receiver.username,
+                'avatar': receiver.photos[0] if receiver.photos else None,
+            },
             chat.last_message = last_message.text if last_message else None
             chat.is_read = last_message.is_read if last_message else True
         return chats

@@ -90,6 +90,8 @@ class Message(Common):
 class Chat(Common):
     user_1 = fields.ForeignKeyField('models.User', related_name='chats_1')
     user_2 = fields.ForeignKeyField('models.User', related_name='chats_2')
+    first_message = fields.DatetimeField(auto_now_add=True)
+    last_message = fields.DatetimeField(null=True)
 
     class Meta:
         table = 'chats'

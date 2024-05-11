@@ -8,9 +8,10 @@ class Settings(BaseSettings):
     secret_key: str = 'secret'
     jwt_expire: int = 24 * 60 * 60
     jwt_algorithm: str = 'HS256'
-    aws_access_key_id: str
-    aws_secret_access_key: str
-    aws_bucket_name: str
+    s3_access_key_id: str
+    s3_secret_access_key: str
+    s3_bucket_name: str
+    aws_region: str
 
 
 settings = Settings()

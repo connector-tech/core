@@ -4,8 +4,6 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
-from starlette.websockets import WebSocket
 from tortoise import Tortoise
 
 from code.api import setup_routers
@@ -19,9 +17,10 @@ async def lifespan(app: FastAPI):
         await asyncio.gather(
             Tortoise.init(config=TORTOISE_CONFIG),
             S3.connect(
-                access_key_id=settings.aws_access_key_id,
-                secret_access_key=settings.aws_secret_access_key,
-                bucket_name=settings.aws_bucket_name,
+                access_key_id=settings.s3_access_key_id,
+                secret_access_key=settings.s3_secret_access_key,
+                bucket_name=settings.s3_bucket_name,
+                region=settings.aws_region,
             ),
         )
         yield

@@ -9,10 +9,10 @@ class S3:
     _bucket_name = None
 
     @classmethod
-    async def connect(cls, access_key_id: str, secret_access_key: str, bucket_name: str):
+    async def connect(cls, access_key_id: str, secret_access_key: str, bucket_name: str, region: str):
         if cls._instance is None:
             session = Session(
-                region_name='eu-central-1',
+                region_name=region,
                 aws_access_key_id=access_key_id,
                 aws_secret_access_key=secret_access_key,
             )

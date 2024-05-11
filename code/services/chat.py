@@ -57,7 +57,7 @@ class ChatService:
                 'id': str(receiver.id),
                 'full_name': receiver.full_name,
                 'avatar': receiver.photos[0] if receiver.photos else None,
-            },
+            }
             chat.last_message = last_message.text if last_message else None
             chat.is_read = last_message.is_read if last_message else True
         return chats

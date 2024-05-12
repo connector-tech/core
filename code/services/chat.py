@@ -11,7 +11,7 @@ class ChatService:
                 chat_id=chat_id,
             )
             .order_by(
-                '-created_at',
+                'created_at',
             )
             .offset((page - 1) * size)
             .limit(size)

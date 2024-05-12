@@ -128,7 +128,6 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await websocket.accept()
 
     connected_users[user_id] = websocket
-    logger.info(f'connected users: {connected_users.items()}')
     logger.info(f'websocket connected: {user_id}')
 
     try:
@@ -138,9 +137,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
 
             receiver_id = data.get('receiver_id')
             receiver = connected_users.get(receiver_id)
-            logger.info(f'is equal: {receiver_id == user_id}')
-            logger.info(f'websockets equals: {receiver == websocket}')
-            logger.info(f'websockets equals: {receiver is websocket}')
+
             coros = [
                 asyncio.create_task(
                     Message.create(
@@ -162,5 +159,5 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     logger.error(f'websocket error: {response}')
     except Exception as e:
         logger.error(f'websocket error: {e}')
-        del connected_users[user_id]
+        connected_users.pop(user_id, None)
         await websocket.close()

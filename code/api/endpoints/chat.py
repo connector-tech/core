@@ -1,5 +1,4 @@
 import asyncio
-import datetime
 import uuid
 
 from fastapi import APIRouter, Depends, Query, status, WebSocket
@@ -160,4 +159,5 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                     logger.error(f'websocket error: {response}')
     except Exception as e:
         logger.error(f'websocket error: {e}')
+        connected_users.pop(user_id, None)
         await websocket.close()

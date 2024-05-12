@@ -52,7 +52,7 @@ class ChatService:
                 .order_by('-created_at')
                 .first()
             )
-            receiver = chat.user_1 if chat.user_2.id == user_id else chat.user_2
+            receiver = chat.user_1 if str(chat.user_2.id) == user_id else chat.user_2
             chat.receiver = {
                 'id': str(receiver.id),
                 'full_name': receiver.full_name,

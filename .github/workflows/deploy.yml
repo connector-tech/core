@@ -40,8 +40,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          docker stop connector-app-1 || true
-          docker rm connector-app-1 || true
+          docker stop connector-app || true
+          docker rm connector-app || true
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -64,7 +64,7 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/connector-core:latest
 
           # Run the Docker container on AWS Lightsail
-          docker run -d --name=connector-app-1 -p 443:443 -v /home/ubuntu/core/ssl-keys:/app/ssl-keys \
+          docker run -d --name=connector-app \
           -e DATABASE_URL=$DATABASE_URL \
           -e S3_ACCESS_KEY_ID=$S3_ACCESS_KEY_ID \
           -e S3_BUCKET_NAME=$S3_BUCKET_NAME \
@@ -72,4 +72,4 @@ jobs:
           -e AWS_REGION=$AWS_REGION \
           -e SECRET_KEY=$SECRET_KEY \
           ${{ secrets.DOCKER_USERNAME }}/connector-core:latest \
-          sh -c "aerich upgrade && uvicorn code.app:app --host 0.0.0.0 --port 443 --ssl-keyfile /app/ssl-keys/privkey.pem --ssl-certfile /app/ssl-keys/fullchain.pem"
+          sh -c "aerich upgrade && uvicorn code.app:app --host 0.0.0.0 --port 8000"

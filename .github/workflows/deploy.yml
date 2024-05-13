@@ -49,7 +49,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Deploy to AWS Lightsail
+      - name: Deploy App to AWS Lightsail
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -60,9 +60,6 @@ jobs:
           S3_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
-          # Pull the Docker image from Docker Hub
-          docker pull ${{ secrets.DOCKER_USERNAME }}/connector-core:latest
-
           # Run the Docker container on AWS Lightsail
           docker run -d --name=connector-app --network=backend \
           -e DATABASE_URL=$DATABASE_URL \
@@ -73,3 +70,13 @@ jobs:
           -e SECRET_KEY=$SECRET_KEY \
           ${{ secrets.DOCKER_USERNAME }}/connector-core:latest \
           sh -c "aerich upgrade && uvicorn code.app:app --host 0.0.0.0 --port 8000"
+
+      - name: Deploy Scheduler to AWS Lightsail
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          # Run the Docker container on AWS Lightsail
+          docker run -d --name=connector-scheduler \
+          -e DATABASE_URL=$DATABASE_URL \
+          ${{ secrets.DOCKER_USERNAME }}/connector-core:latest \
+          sh -c "aerich upgrade && python -m code.scheduler"

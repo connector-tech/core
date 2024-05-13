@@ -32,6 +32,7 @@ async def get_matches(user_id: str = Depends(get_current_user_id)):
         viewer_id=user_id,
         user_id__in=user_ids,
         is_liked=True,
+        is_chat_started=False,
     ).prefetch_related('user', 'user__interests')
 
     return JSONResponse(

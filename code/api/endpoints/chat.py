@@ -4,11 +4,12 @@ import uuid
 from fastapi import APIRouter, Depends, Query, status, WebSocket
 from fastapi.responses import JSONResponse
 from loguru import logger
+from tortoise.expressions import Q
 
 from code.api.deps import get_current_user_id
 from code.dto.chat import ChatListBaseResponse, MessageListBaseResponse, ChatCreateBaseResponse, ChatCreateBaseRequest
 from code.dto.common import PaginatedResponse, ErrorResponse
-from code.models import Chat, Message
+from code.models import Chat, Message, UserSocial
 from code.services.chat import ChatService
 
 router = APIRouter(prefix='/chats', tags=['chats'])
@@ -68,11 +69,18 @@ async def create_chat_handler(
 ):
     try:
         chat_id = str(uuid.uuid4())
-        await Chat.create(
-            id=chat_id,
-            user_1_id=user_id,
-            user_2_id=data.receiver_id,
+        await asyncio.gather(
+            Chat.create(
+                id=chat_id,
+                user_1_id=user_id,
+                user_2_id=data.receiver_id,
+            ),
+            UserSocial.filter(
+                Q(Q(viewer_id=user_id) & Q(user_id=data.receiver_id))
+                | Q(Q(viewer_id=data.receiver_id) & Q(user_id=user_id))
+            ).update(is_chat_started=True),
         )
+
     except Exception as e:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

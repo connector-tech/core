@@ -69,6 +69,7 @@ class UserSocial(Common):
     viewer = fields.ForeignKeyField('models.User', related_name='viewed')
     user = fields.ForeignKeyField('models.User', related_name='viewers')
     is_liked = fields.BooleanField(default=False)
+    is_chat_started = fields.BooleanField(default=False)
 
     class Meta:
         table = 'user_social'

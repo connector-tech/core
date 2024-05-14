@@ -20,18 +20,15 @@ class WebSocketClient:
             cls._connected_users[user_id] = websocket
             logger.info(f'websocket connected: {user_id}')
         except Exception as e:
-            logger.info(f'ERROR while connecting websocket user {user_id}: {e}')
+            logger.error(f'ERROR while connecting websocket user {user_id}: {e}')
 
     @classmethod
     async def disconnect(cls, user_id: str) -> None:
         try:
-            websocket = cls._connected_users.get(user_id)
-            if websocket:
-                await websocket.close()
             cls._connected_users.pop(user_id, None)
             logger.info(f'websocket user succesfully disconnected: {user_id}')
         except Exception as e:
-            logger.info(f'ERROR while disconnecting websocket user {user_id}: {e}')
+            logger.error(f'error while disconnecting websocket user {user_id}: {e}')
 
     @classmethod
     async def send_personal_message(cls, data: dict, user_id: str):
@@ -54,4 +51,4 @@ class WebSocketClient:
 
         for response in responses:
             if response is Exception:
-                logger.info(f'ERROR while sending personal message: {response}')
+                logger.error(f'ERROR while sending personal message: {response}')

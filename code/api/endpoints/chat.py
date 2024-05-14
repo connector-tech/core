@@ -143,6 +143,6 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
             logger.info(f'data {user_id} sent to websocket: {data}')
             await WebSocketClient.send_personal_message(data, user_id)
         except WebSocketDisconnect:
-            logger.info(f'ERROR: {user_id} websocket disconnected')
+            logger.error(f'ERROR: {user_id} websocket disconnected')
             await WebSocketClient.disconnect(user_id)
             break

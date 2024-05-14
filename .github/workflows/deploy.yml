@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      IMAGE: ${{ steps.build-image.outputs.IMAGE }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,9 +25,13 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker image to Docker Hub
+        id: build-image
         run: |
-          docker tag connector-core ${{ secrets.DOCKER_USERNAME }}/connector-core:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/connector-core:latest
+          docker tag connector-core ${{ secrets.DOCKER_USERNAME }}/$IMAGE
+          docker push ${{ secrets.DOCKER_USERNAME }}/$IMAGE
+          echo "IMAGE=$IMAGE" >> $GITHUB_OUTPUT
+        env:
+          IMAGE: connector-core:${{ github.run_id }}
 
   deploy:
     runs-on: self-hosted
@@ -51,6 +57,7 @@ jobs:
 
       - name: Deploy App to AWS Lightsail
         env:
+          IMAGE: ${{ needs.build.outputs.IMAGE }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -68,11 +75,12 @@ jobs:
           -e S3_SECRET_ACCESS_KEY=$S3_SECRET_ACCESS_KEY \
           -e AWS_REGION=$AWS_REGION \
           -e SECRET_KEY=$SECRET_KEY \
-          ${{ secrets.DOCKER_USERNAME }}/connector-core:latest \
+          ${{ secrets.DOCKER_USERNAME }}/$IMAGE \
           sh -c "aerich upgrade && uvicorn code.app:app --host 0.0.0.0 --port 8000"
 
       - name: Deploy Scheduler to AWS Lightsail
         env:
+          IMAGE: ${{ needs.build.outputs.IMAGE }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -90,5 +98,5 @@ jobs:
           -e S3_SECRET_ACCESS_KEY=$S3_SECRET_ACCESS_KEY \
           -e AWS_REGION=$AWS_REGION \
           -e SECRET_KEY=$SECRET_KEY \
-          ${{ secrets.DOCKER_USERNAME }}/connector-core:latest \
+          ${{ secrets.DOCKER_USERNAME }}/$IMAGE \
           sh -c "aerich upgrade && python -m code.scheduler"

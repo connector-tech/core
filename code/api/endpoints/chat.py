@@ -3,14 +3,16 @@ import uuid
 
 from fastapi import APIRouter, Depends, Query, status, WebSocket
 from fastapi.responses import JSONResponse
+from fastapi.websockets import WebSocketDisconnect
 from loguru import logger
 from tortoise.expressions import Q
 
 from code.api.deps import get_current_user_id
 from code.dto.chat import ChatListBaseResponse, MessageListBaseResponse, ChatCreateBaseResponse, ChatCreateBaseRequest
 from code.dto.common import PaginatedResponse, ErrorResponse
-from code.models import Chat, Message, UserSocial
+from code.models import Chat, UserSocial
 from code.services.chat import ChatService
+from code.clients.websockets import WebSocketClient
 
 router = APIRouter(prefix='/chats', tags=['chats'])
 
@@ -133,39 +135,14 @@ async def get_messages_handler(
 
 
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
-    await websocket.accept()
+    await WebSocketClient.connect(user_id, websocket)
 
-    connected_users[user_id] = websocket
-    logger.info(f'websocket connected: {user_id}')
-
-    try:
-        while True:
+    while True:
+        try:
             data = await websocket.receive_json()
-            logger.info(f'websocket data: {data}')
-
-            receiver_id = data.get('receiver_id')
-            receiver = connected_users.get(receiver_id)
-
-            coros = [
-                asyncio.create_task(
-                    Message.create(
-                        user_id=user_id,
-                        chat_id=data['chat_id'],
-                        text=data['text'],
-                    ),
-                )
-            ]
-
-            if receiver:
-                coros.append(asyncio.create_task(receiver.send_json(data)))
-            responses = await asyncio.gather(*coros, return_exceptions=True)
-
-            logger.info(f'coro responses: {responses}')
-
-            for response in responses:
-                if isinstance(response, Exception):
-                    logger.error(f'websocket error: {response}')
-    except Exception as e:
-        logger.error(f'websocket error: {e}')
-        connected_users.pop(user_id, None)
-        await websocket.close()
+            logger.info(f'data {user_id} sent to websocket: {data}')
+            await WebSocketClient.send_personal_message(data, user_id)
+        except WebSocketDisconnect:
+            logger.error(f'{user_id} websocket disconnected')
+            await WebSocketClient.disconnect(user_id)
+            break

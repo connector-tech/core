@@ -9,6 +9,7 @@ from tortoise import Tortoise
 from code.api import setup_routers
 from code.clients.boto3 import S3
 from code.config import settings, TORTOISE_CONFIG
+from code.clients.websockets import WebSocketClient
 
 
 @asynccontextmanager
@@ -22,6 +23,7 @@ async def lifespan(app: FastAPI):
                 bucket_name=settings.s3_bucket_name,
                 region=settings.aws_region,
             ),
+            WebSocketClient.init()
         )
         yield
     finally:

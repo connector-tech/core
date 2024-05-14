@@ -137,12 +137,7 @@ async def get_messages_handler(
 async def websocket_endpoint(websocket: WebSocket, user_id: str):
     await WebSocketClient.connect(user_id, websocket)
 
-    while True:
-        try:
-            data = await websocket.receive_json()
-            logger.info(f'data {user_id} sent to websocket: {data}')
-            await WebSocketClient.send_personal_message(data, user_id)
-        except WebSocketDisconnect:
-            logger.error(f'ERROR: {user_id} websocket disconnected')
-            await WebSocketClient.disconnect(user_id)
-            break
+    async for message in websocket.iter_json():
+        logger.info(f'message {user_id} sent to websocket: {message}')
+        await WebSocketClient.send_personal_message(message, user_id)
+    await WebSocketClient.disconnect(user_id)

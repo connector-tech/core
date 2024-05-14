@@ -25,6 +25,9 @@ class WebSocketClient:
     @classmethod
     async def disconnect(cls, user_id: str) -> None:
         try:
+            websocket = cls._connected_users.get(user_id)
+            if websocket:
+                await websocket.close()
             cls._connected_users.pop(user_id, None)
             logger.info(f'websocket user succesfully disconnected: {user_id}')
         except Exception as e:

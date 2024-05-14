@@ -16,11 +16,13 @@ class WebSocketClient:
     @classmethod
     async def connect(cls, user_id: str, websocket: WebSocket) -> None:
         try:
+            logger.info(f'connected users: {cls._connected_users}')
             await websocket.accept()
             cls._connected_users[user_id] = websocket
+            logger.info(f'connected users: {cls._connected_users}')
             logger.info(f'websocket connected: {user_id}')
         except Exception as e:
-            logger.error(f'ERROR while connecting websocket user {user_id}: {e}')
+            logger.error(f'error while connecting websocket user {user_id}: {e}')
 
     @classmethod
     async def disconnect(cls, user_id: str) -> None:
@@ -30,6 +32,7 @@ class WebSocketClient:
                 await websocket.close()
             cls._connected_users.pop(user_id, None)
             logger.info(f'websocket user succesfully disconnected: {user_id}')
+            logger.info(f'connected users: {cls._connected_users}')
         except Exception as e:
             logger.error(f'error while disconnecting websocket user {user_id}: {e}')
 
@@ -54,4 +57,4 @@ class WebSocketClient:
 
         for response in responses:
             if response is Exception:
-                logger.error(f'ERROR while sending personal message: {response}')
+                logger.error(f'error while sending personal message: {response}')

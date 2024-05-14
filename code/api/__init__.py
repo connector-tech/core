@@ -10,4 +10,4 @@ def setup_routers(app: FastAPI):
     app.include_router(users.router)
     app.include_router(social.router)
     app.include_router(chat.router)
-    app.add_api_websocket_route('/ws/{user_id}/', chat.websocket_endpoint)
+    app.add_api_websocket_route('/ws/{user_id}', chat.websocket_endpoint)

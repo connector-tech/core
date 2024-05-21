@@ -47,6 +47,7 @@ async def get_matches(user_id: str = Depends(get_current_user_id)):
                     'email': match.user.email,
                     'age': match.user.age,
                     'bio': match.user.bio,
+                    'photos': match.user.photos,
                     'interests': [interest.name for interest in match.user.interests],
                 }
                 for match in matches

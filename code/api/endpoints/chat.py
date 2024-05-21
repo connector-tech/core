@@ -3,7 +3,6 @@ import uuid
 
 from fastapi import APIRouter, Depends, Query, status, WebSocket
 from fastapi.responses import JSONResponse
-from fastapi.websockets import WebSocketDisconnect
 from loguru import logger
 from tortoise.expressions import Q
 
@@ -21,7 +20,6 @@ connected_users = {}
 
 @router.get(
     '/',
-
     responses={
         200: {'model': PaginatedResponse[ChatListBaseResponse]},
         400: {'model': ErrorResponse},

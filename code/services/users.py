@@ -1,6 +1,5 @@
 from code.models import Interest, User, UserSocial
 
-
 PREFERRED_GENDER_MAPPER = {
     User.GenderEnum.MALE: User.GenderEnum.FEMALE.value,
     User.GenderEnum.FEMALE: User.GenderEnum.MALE.value,

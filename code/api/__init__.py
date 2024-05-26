@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from code.api.endpoints import auth, chat, health, interests, social, users
+from code.api.endpoints import auth, chat, health, interests, social, users, questionnaire
 
 
 def setup_routers(app: FastAPI):
@@ -10,4 +10,5 @@ def setup_routers(app: FastAPI):
     app.include_router(users.router)
     app.include_router(social.router)
     app.include_router(chat.router)
+    app.include_router(questionnaire.router)
     app.add_api_websocket_route('/ws/{user_id}', chat.websocket_endpoint)

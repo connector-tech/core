@@ -98,3 +98,20 @@ class Chat(Common):
         table = 'chats'
         unique_together = [('user_1_id', 'user_2_id')]
         indexes = ['user_1_id', 'user_2_id', 'created_at']
+
+
+class QuestionnaireQuestion(Common):
+    text = fields.TextField()
+
+    class Meta:
+        table = 'questionnaire_questions'
+
+
+class UserQuestionnaireAnswer(Common):
+    user = fields.ForeignKeyField('models.User', related_name='questionnaires')
+    question = fields.ForeignKeyField('models.QuestionnaireQuestion', related_name='answers')
+    answer = fields.TextField()
+
+    class Meta:
+        table = 'user_questionnaire_answers'
+        indexes = ['user_id']

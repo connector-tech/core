@@ -12,7 +12,6 @@ from code.dto.users import (
 from code.services.media import MediaService
 from code.services.users import UserService
 
-
 router = APIRouter(prefix='/users', tags=['users'])
 
 

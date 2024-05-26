@@ -99,6 +99,6 @@ jobs:
           -e S3_SECRET_ACCESS_KEY=$S3_SECRET_ACCESS_KEY \
           -e AWS_REGION=$AWS_REGION \
           -e SECRET_KEY=$SECRET_KEY \
-          --memory=32m \
+          --memory=64m \
           ${{ secrets.DOCKER_USERNAME }}/$IMAGE \
           sh -c "aerich upgrade && python -m code.scheduler"

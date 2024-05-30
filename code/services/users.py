@@ -1,5 +1,3 @@
-from loguru import logger
-
 from code.models import Interest, User, UserSocial, UserSimilarity
 
 PREFERRED_GENDER_MAPPER = {

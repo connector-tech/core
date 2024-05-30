@@ -27,10 +27,18 @@ class UserService:
             .limit(size)
             .prefetch_related('user_2__interests')  # noqa
         )
-        logger.info(f'Users: {users.sql()}')
         users = await users
         users = [user.user_2 for user in users]
-        logger.info(f'Users: {users}')
+
+        if len(users) == 0:
+            users = await (
+                User.exclude(id=viewer_id)
+                .exclude(id__in=viewed_user_ids)
+                .filter(gender=PREFERRED_GENDER_MAPPER[viewer.gender])
+                .offset((page - 1) * size)
+                .limit(size)
+                .prefetch_related('interests')
+            )
 
         for user in users:
             user.is_liked = await UserSocial.filter(

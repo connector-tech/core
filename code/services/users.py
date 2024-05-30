@@ -10,7 +10,6 @@ class UserService:
     @classmethod
     async def get_users(cls, viewer_id: str, page: int, size: int) -> list[User]:
         viewer = await User.filter(id=viewer_id).only('gender').first()
-
         viewed_user_ids = await UserSocial.filter(
             viewer_id=viewer_id,
         ).values_list('user_id', flat=True)

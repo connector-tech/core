@@ -118,11 +118,10 @@ class UserQuestionnaireAnswer(Common):
 
 
 class UserSimilarity(Common):
-    user_1 = fields.ForeignKeyField('models.User', related_name='similar_users_1')
-    user_2 = fields.ForeignKeyField('models.User', related_name='similar_users_2')
-    similarity = fields.FloatField()
+    user_1 = fields.ForeignKeyField('models.User', related_name='similar_users_1', index=True)
+    user_2 = fields.ForeignKeyField('models.User', related_name='similar_users_2', index=True)
+    similarity = fields.FloatField(index=True)
 
     class Meta:
         table = 'user_similarity'
         unique_together = [('user_1_id', 'user_2_id')]
-        indexes = ['user_1_id', 'user_2_id']

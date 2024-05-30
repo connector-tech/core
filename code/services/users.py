@@ -1,4 +1,6 @@
-from code.models import Interest, User, UserSocial
+from tortoise.expressions import Q
+
+from code.models import Interest, User, UserSocial, UserSimilarity
 
 PREFERRED_GENDER_MAPPER = {
     User.GenderEnum.MALE: User.GenderEnum.FEMALE.value,
@@ -15,14 +17,17 @@ class UserService:
         ).values_list('user_id', flat=True)
 
         users = await (
-            User.exclude(id__in=viewed_user_ids)
-            .exclude(id=viewer_id)
-            .filter(gender=PREFERRED_GENDER_MAPPER[viewer.gender])
-            .order_by('-created_at')
+            UserSimilarity.filter(user_1_id=viewer_id)
+            .prefetch_related('user_2')
+            .exclude(user_2_id__in=viewed_user_ids)
+            .exclude(user_2_id=viewer_id)
+            .filter(user_2__gender=PREFERRED_GENDER_MAPPER[viewer.gender])
+            .order_by('-similarity')
             .offset((page - 1) * size)
             .limit(size)
-            .prefetch_related('interests')  # noqa
+            .prefetch_related('user_2__interests')  # noqa
         )
+        users = [user.user_2 for user in users]
 
         for user in users:
             user.is_liked = await UserSocial.filter(

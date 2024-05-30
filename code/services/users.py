@@ -1,4 +1,4 @@
-from tortoise.expressions import Q
+from loguru import logger
 
 from code.models import Interest, User, UserSocial, UserSimilarity
 
@@ -16,7 +16,7 @@ class UserService:
             viewer_id=viewer_id,
         ).values_list('user_id', flat=True)
 
-        users = await (
+        users = (
             UserSimilarity.filter(user_1_id=viewer_id)
             .prefetch_related('user_2')
             .exclude(user_2_id__in=viewed_user_ids)
@@ -27,7 +27,10 @@ class UserService:
             .limit(size)
             .prefetch_related('user_2__interests')  # noqa
         )
+        logger.info(f'Users: {users.sql()}')
+        users = await users
         users = [user.user_2 for user in users]
+        logger.info(f'Users: {users}')
 
         for user in users:
             user.is_liked = await UserSocial.filter(
